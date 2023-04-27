@@ -97,9 +97,11 @@ async function getNextVideo() {
         }
         
         vidTitle.textContent = postData.title;
+        vidTitle.href = "https://reddit.com" + postData.permalink;
+        searchInput.placeholder = postData.subreddit_name_prefixed;
         mainVid.play();
     } finally {
-        if (loopPos == currentVideos.length - 1 || currentVideos.length == 0) {
+        if (loopPos >= currentVideos.length - 1 || currentVideos.length == 0) {
             const url = `https://www.reddit.com/search.json?q=${subreddit ? `subreddit:${subreddit}` : ''} ${query ? `${query}` : ''} type:video&include_over_18=1&limit=25&after=${nextFullname}`;
             const response = await fetch(url);
             const data = await response.json();
@@ -138,19 +140,19 @@ document.addEventListener('touchmove', function (e) {
     const currentY = e.touches[0].clientY;
     const moved = currentY - startY;
 
-    if (moved > -250) {
-        nextVidThumb.style = `transform: translateY(${250+moved}%);`;
+    if (moved > -100) {
+        nextVidThumb.style = `transform: translateY(${100+moved}%);`;
     }
 })
 
 document.addEventListener('touchend', async function (e) {
     endY = e.changedTouches[0].clientY;
     console.log(endY - startY);
-    if (endY - startY >= -250) {
-        nextVidThumb.style = `transform: translateY(250%);`;
+    if (endY - startY >= -100) {
+        nextVidThumb.style = `transform: translateY(100%);`;
     }
 
-    if (endY - startY <= -250) {
+    if (endY - startY <= -100) {
         vidTitle.style = 'color: gray;';
 
         const videoLoadedPromise = new Promise(resolve => {
@@ -163,8 +165,10 @@ document.addEventListener('touchend', async function (e) {
         await videoLoadedPromise;
         
         vidTitle.style = 'color: white;';
-        nextVidThumb.style = `transform: translateY(250%);`;
+        nextVidThumb.style = `transform: translateY(100%);`;
         nextVidThumb.src = nextThumbnail;
+        const nextBorderHeight = (window.innerHeight/2) - (nextVidThumb.clientHeight/2);
+        nextVidThumb.style = `border-top: ${nextBorderHeight}px solid black; border-bottom: ${nextBorderHeight}px solid black;`;
     }
 
     if (endY - startY >= 250) {

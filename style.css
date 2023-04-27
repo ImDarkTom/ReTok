@@ -21,9 +21,14 @@ body {
 
 #vid-title {
     color: white;
-    text-shadow: 30px black;
+    font-size: x-large;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px black;
     font-family: Arial, Helvetica, sans-serif;
     position: absolute;
+    padding: 10px;
+    user-select: none;
+    text-decoration: none;
     top: 10;
     bottom:0;
     left: 0;
@@ -41,6 +46,8 @@ body {
     right:0;
     margin: auto;
     transform: translateY(-250%);
+    border-top: 100px solid black;
+    border-bottom: 100px solid black;
 }
 
 #notification-text {
