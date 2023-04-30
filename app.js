@@ -10,7 +10,11 @@ let nextThumbnail;
 let currentVideoData;
 
 const mainVid = document.querySelector('#main-vid');
+
 const vidTitle = document.querySelector('#vid-title');
+const vidSubreddit = document.querySelector('#subreddit-text');
+const vidAuthor = document.querySelector('#username-text');
+
 const nextVidThumb = document.querySelector('#next-vid-thumb');
 const notificationText = document.querySelector('#notification-text');
 const searchInput = document.querySelector('#search-box');
@@ -98,6 +102,13 @@ async function getNextVideo() {
         
         vidTitle.textContent = postData.title.replace(/amp;/g, '');
         vidTitle.href = "https://reddit.com" + postData.permalink;
+
+        vidSubreddit.textContent = postData.subreddit_name_prefixed;
+        vidSubreddit.href = `https://reddit.com/r/${postData.subreddit}`;
+
+        vidAuthor.textContent = `@${postData.author}`;
+        vidAuthor.href = `https://reddit.com/u/${postData.author}`;
+
         searchInput.placeholder = postData.subreddit_name_prefixed;
         mainVid.play();
     } finally {

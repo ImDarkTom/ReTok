@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
 
+:root {
+    --dark-overlay: rgba(10, 10, 10, 10);
+}
+
 * {
     font-family: 'Source Sans Pro', sans-serif;
 }
@@ -34,6 +38,22 @@ body {
     left: 0;
     right: 0;
     z-index: 50;
+    display: grid;
+}
+
+.post-additional-info {
+    text-decoration: underline;
+    color: rgb(218, 218, 218);
+    font-size: medium;
+    background-color: var(--dark-overlay);
+    width: fit-content;
+    border: 5px solid var(--dark-overlay);
+    border-radius: 10px;
+    margin-right: 2vw;
+}
+
+#vid-additional-info {
+    margin-bottom: 1vh;
 }
 
 #vid-title {
