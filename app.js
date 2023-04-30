@@ -14,6 +14,7 @@ const mainVid = document.querySelector('#main-vid');
 const vidTitle = document.querySelector('#vid-title');
 const vidSubreddit = document.querySelector('#subreddit-text');
 const vidAuthor = document.querySelector('#username-text');
+const vidAgo = document.querySelector('#time-ago-text');
 
 const nextVidThumb = document.querySelector('#next-vid-thumb');
 const notificationText = document.querySelector('#notification-text');
@@ -23,6 +24,27 @@ if (subreddit) {
     searchInput.value = `r/${subreddit} ${query}`;
 } else {
     searchInput.value = query;
+}
+
+function getTimeAgo(utcTimestamp) {
+    const currentDate = new Date();
+    const timestampDate = new Date(utcTimestamp * 1000); // Convert to milliseconds
+
+    const timeDifference = currentDate.getTime() - timestampDate.getTime();
+    const secondsDifference = Math.round(timeDifference / 1000);
+
+    if (secondsDifference < 60) {
+        return "Just now";
+    } else if (secondsDifference < 3600) {
+        const minutes = Math.floor(secondsDifference / 60);
+        return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
+    } else if (secondsDifference < 86400) {
+        const hours = Math.floor(secondsDifference / 3600);
+        return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+    } else {
+        const days = Math.floor(secondsDifference / 86400);
+        return `${days} ${days === 1 ? "day" : "days"} ago`;
+    }
 }
 
 
@@ -108,6 +130,8 @@ async function getNextVideo() {
 
         vidAuthor.textContent = `@${postData.author}`;
         vidAuthor.href = `https://reddit.com/u/${postData.author}`;
+
+        vidAgo.textContent = `• ${getTimeAgo(postData.created)}`
 
         searchInput.placeholder = postData.subreddit_name_prefixed;
         mainVid.play();
