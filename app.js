@@ -96,7 +96,7 @@ async function getNextVideo() {
             mainVid.src = postData.preview.reddit_video_preview.fallback_url;
         }
         
-        vidTitle.textContent = postData.title;
+        vidTitle.textContent = postData.title.replace(/amp;/g, '');
         vidTitle.href = "https://reddit.com" + postData.permalink;
         searchInput.placeholder = postData.subreddit_name_prefixed;
         mainVid.play();
@@ -140,19 +140,19 @@ document.addEventListener('touchmove', function (e) {
     const currentY = e.touches[0].clientY;
     const moved = currentY - startY;
 
-    if (moved > -100) {
-        nextVidThumb.style = `transform: translateY(${100+moved}%);`;
+    if (moved > -150) {
+        nextVidThumb.style = `transform: translateY(${150+moved}%);`;
     }
 })
 
 document.addEventListener('touchend', async function (e) {
     endY = e.changedTouches[0].clientY;
     console.log(endY - startY);
-    if (endY - startY >= -100) {
-        nextVidThumb.style = `transform: translateY(100%);`;
+    if (endY - startY >= -150) {
+        nextVidThumb.style = `transform: translateY(150%);`;
     }
 
-    if (endY - startY <= -100) {
+    if (endY - startY <= -150) {
         vidTitle.style = 'color: gray;';
 
         const videoLoadedPromise = new Promise(resolve => {
@@ -165,13 +165,13 @@ document.addEventListener('touchend', async function (e) {
         await videoLoadedPromise;
         
         vidTitle.style = 'color: white;';
-        nextVidThumb.style = `transform: translateY(100%);`;
+        nextVidThumb.style = `transform: translateY(150%);`;
         nextVidThumb.src = nextThumbnail;
-        const nextBorderHeight = (window.innerHeight/2) - (nextVidThumb.clientHeight/2);
-        nextVidThumb.style = `border-top: ${nextBorderHeight}px solid black; border-bottom: ${nextBorderHeight}px solid black;`;
+        const nextBorderHeight = (window.innerHeight/2) - (nextVidThumb.getBoundingClientRect().height/2) + nextVidThumb.getBoundingClientRect().top;
+        document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);
     }
 
-    if (endY - startY >= 250) {
+    if (endY - startY >= 150) {
         getPrevVideo();
     }
 });

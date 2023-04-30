@@ -45,7 +45,7 @@ body {
     left: 0;
     right:0;
     margin: auto;
-    transform: translateY(-250%);
+    transform: translateY(-150%);
     border-top: 100px solid black;
     border-bottom: 100px solid black;
 }
