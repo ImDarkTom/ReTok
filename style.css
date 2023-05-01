@@ -30,15 +30,36 @@ body {
     margin: auto;
 }
 
-#vid-info {
-    position: absolute;
+#vidcontainer {
     padding: 10px;
+    position: absolute;
     top: 10;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 50;
+    display: inline-flex;
+}
+
+#vid-buttons {
+    color: white;
+    width: 20%;
+    text-align: center;
+}
+
+#upvotes-symbol {
+    font-size: 15vw;
+    bottom: 0;
+}
+
+#vid-info {
     display: grid;
+    width: 80%;
+}
+
+#upvote-amount {
+    padding: 0;
+    margin: 0;
 }
 
 .post-additional-info {
@@ -115,8 +136,4 @@ body {
     display: block;
     margin: 0 auto;
     z-index: 50;
-}
-
-#search-box::placeholder {
-    color: white;
 }

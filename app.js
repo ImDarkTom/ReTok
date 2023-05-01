@@ -16,6 +16,8 @@ const vidSubreddit = document.querySelector('#subreddit-text');
 const vidAuthor = document.querySelector('#username-text');
 const vidAgo = document.querySelector('#time-ago-text');
 
+const upvoteText = document.querySelector('#upvote-amount');
+
 const nextVidThumb = document.querySelector('#next-vid-thumb');
 const notificationText = document.querySelector('#notification-text');
 const searchInput = document.querySelector('#search-box');
@@ -131,9 +133,10 @@ async function getNextVideo() {
         vidAuthor.textContent = `@${postData.author}`;
         vidAuthor.href = `https://reddit.com/u/${postData.author}`;
 
-        vidAgo.textContent = `• ${getTimeAgo(postData.created)}`
+        upvoteText.textContent = postData.score < 1000 ? postData.score : `${(postData.score/1000).toFixed(1)}K`;
 
-        searchInput.placeholder = postData.subreddit_name_prefixed;
+        vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
+
         mainVid.play();
     } finally {
         if (loopPos >= currentVideos.length - 1 || currentVideos.length == 0) {
