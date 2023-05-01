@@ -114,7 +114,7 @@ body {
     left: 0;
     right:0;
     margin: auto;
-    transform: translateY(-150%);
+    transform: translateY(100vh);
     border-top: 100px solid black;
     border-bottom: 100px solid black;
 }
