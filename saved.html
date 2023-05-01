@@ -5,13 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saved | ReTok</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,700,0,0"/>
     <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body>
     <div id="vidcontainer">
-        <a id="vid-title" href="" target="_blank" rel="noopener noreferrer">-</a>
-        <video loop autoplay id="main-vid" muted src="" onclick="playPause()">
+        <div id="vid-info">
+            <div id="vid-additional-info">
+                <a id="subreddit-text" href="" target="_blank" rel="noopener noreferrer" class="post-additional-info">r/-</a>
+                <a id="username-text" href="" target="_blank" rel="noopener noreferrer" class="post-additional-info">@-</a>
+                <a id="time-ago-text" class="post-additional-info">• -</a>
+                <!--Add logic to redirect to search query-->
+            </div>
+            <a id="vid-title" href="" target="_blank" rel="noopener noreferrer">-</a>
+        </div>
+        <div id="vid-buttons">
+            <div id="upvote-box">
+                <span class="material-symbols-outlined" id="upvotes-symbol">
+                    arrow_upward
+                </span>
+                <h3 id="upvote-amount">-</h3>
+            </div>
+        </div>
     </div>
+    <video loop autoplay id="main-vid" muted src="" onclick="playPause()" ondblclick="saveVideo()"></video>
     <img src="" id="next-vid-thumb">
     <script src="saved.js"></script>
 </body>
