@@ -10,6 +10,7 @@ let nextThumbnail;
 let currentVideoData;
 
 const mainVid = document.querySelector('#main-vid');
+const nextVidPreload = document.querySelector('#next-video-preload');
 
 const vidTitle = document.querySelector('#vid-title');
 const vidSubreddit = document.querySelector('#subreddit-text');
@@ -148,10 +149,22 @@ async function getNextVideo() {
             nextFullname = data.data.after;
             currentVideos = currentVideos.concat(fetchVideos);
         }
+
         if (loopPos == 0) {
             await getNextVideo();
             nextVidThumb.style = `transform: translateY(100vh);`;
         }
+
+        const nextPostData = currentVideos[loopPos+1].data;
+        const nextRedditMedia = nextPostData.secure_media.reddit_video;
+
+        if (nextRedditMedia) {
+            nextVidPreload.src = nextRedditMedia.fallback_url;
+        } else {
+            nextVidPreload.src = nextRedditMedia.preview.reddit_video_preview.fallback_url;
+        }
+
+        nextVidPreload.load();
     }
 }
 

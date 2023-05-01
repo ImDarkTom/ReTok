@@ -30,6 +30,11 @@ body {
     margin: auto;
 }
 
+#next-video-preload {
+    display: none;
+    position: absolute;
+}
+
 #vidcontainer {
     padding: 10px;
     position: absolute;

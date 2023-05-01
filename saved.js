@@ -61,8 +61,8 @@ async function getNextVideo() {
 
     vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
 
-    mainVid.play();
-    
+    mainVid.load();
+
     if (loopPos == 0) {
         await getNextVideo();
         nextVidThumb.style = `transform: translateY(100vh);`;
@@ -74,7 +74,7 @@ function getPrevVideo() {
     const postData = currentVideos[loopPos].data;
     mainVid.src = postData.secure_media.reddit_video.fallback_url;
     vidTitle.textContent = postData.title;
-    mainVid.play();
+    mainVid.load();
 }
 
 function playPause() {
