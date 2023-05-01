@@ -128,7 +128,7 @@ async function getNextVideo() {
         vidTitle.href = "https://reddit.com" + postData.permalink;
 
         vidSubreddit.textContent = postData.subreddit_name_prefixed;
-        vidSubreddit.href = `https://reddit.com/r/${postData.subreddit}`;
+        vidSubreddit.href = `/?r=${postData.subreddit}`;
 
         vidAuthor.textContent = `@${postData.author}`;
         vidAuthor.href = `https://reddit.com/u/${postData.author}`;

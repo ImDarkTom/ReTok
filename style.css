@@ -45,21 +45,30 @@ body {
     color: white;
     width: 20%;
     text-align: center;
+    position: relative;
 }
 
 #upvotes-symbol {
     font-size: 15vw;
-    bottom: 0;
 }
 
-#vid-info {
-    display: grid;
-    width: 80%;
+#upvote-box {
+    bottom: 0px;
+    position: absolute;
+    right: 0px;
+    left: 0px;
 }
 
 #upvote-amount {
     padding: 0;
     margin: 0;
+    text-decoration: none;
+    text-align: center;
+}
+
+#vid-info {
+    display: grid;
+    width: 80%;
 }
 
 .post-additional-info {
