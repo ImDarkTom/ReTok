@@ -62,6 +62,11 @@ async function getNextVideo() {
     vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
 
     mainVid.play();
+    
+    if (loopPos == 0) {
+        await getNextVideo();
+        nextVidThumb.style = `transform: translateY(100vh);`;
+    }
 }
 
 function getPrevVideo() {
@@ -91,19 +96,19 @@ document.addEventListener('touchmove', function (e) {
     const currentY = e.touches[0].clientY;
     const moved = currentY - startY;
 
-    if (moved > -150) {
-        nextVidThumb.style = `transform: translateY(${150+moved}%);`;
+    if (moved > -100) {
+        nextVidThumb.style = `transform: translateY(${100+moved}vh);`;
     }
 })
 
 document.addEventListener('touchend', async function (e) {
     endY = e.changedTouches[0].clientY;
     console.log(endY - startY);
-    if (endY - startY >= -150) {
-        nextVidThumb.style = `transform: translateY(150%);`;
+    if (endY - startY >= -100) {
+        nextVidThumb.style = `transform: translateY(100vh);`;
     }
 
-    if (endY - startY <= -150) {
+    if (endY - startY <= -100) {
         vidTitle.style = 'color: gray;';
 
         const videoLoadedPromise = new Promise(resolve => {
@@ -116,13 +121,13 @@ document.addEventListener('touchend', async function (e) {
         await videoLoadedPromise;
         
         vidTitle.style = 'color: white;';
-        nextVidThumb.style = `transform: translateY(150%);`;
+        nextVidThumb.style = `transform: translateY(100vh);`;
         nextVidThumb.src = nextThumbnail;
         const nextBorderHeight = (window.innerHeight/2) - (nextVidThumb.getBoundingClientRect().height/2) + nextVidThumb.getBoundingClientRect().top;
         document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);
     }
 
-    if (endY - startY >= 150) {
+    if (endY - startY >= 100) {
         getPrevVideo();
     }
 });
