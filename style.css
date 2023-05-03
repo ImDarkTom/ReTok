@@ -2,6 +2,7 @@
 
 :root {
     --dark-overlay: rgba(10, 10, 10, 10);
+    --dark-grey: rgb(39, 39, 39);
 }
 
 * {
@@ -42,7 +43,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 50;
+    z-index: 1;
     display: inline-flex;
 }
 
@@ -53,8 +54,8 @@ body {
     position: relative;
 }
 
-#upvotes-symbol {
-    font-size: 15vw;
+.vid-symbol {
+    font-size: 10vw;
 }
 
 #upvote-box {
@@ -64,7 +65,14 @@ body {
     left: 0px;
 }
 
-#upvote-amount {
+#comment-box {
+    bottom: 10vh;
+    position: absolute;
+    right: 0px;
+    left: 0px;
+}
+
+.vid-button-amount {
     padding: 0;
     margin: 0;
     text-decoration: none;
@@ -135,7 +143,7 @@ body {
     bottom:10;
     left: 0;
     right: 0;
-    z-index: 50;
+    z-index: 1;
 }
 
 #search-box {
@@ -149,5 +157,58 @@ body {
     width: 35vw;
     display: block;
     margin: 0 auto;
-    z-index: 50;
+    z-index: 1;
+}
+
+#comment-popup {
+    width: 100vw;
+    height: 60vh;
+    background-color: var(--dark-grey);
+    border-radius: 2vh 2vh 0 0;
+    position: absolute;
+    bottom: 0;
+
+    z-index: 2;
+    transform: translateY(100%);
+}
+
+#comment-list {
+    width: 100vw;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+#close-comments {
+    color: white;
+    background-color: var(--dark-overlay);
+    margin: 10px;
+    text-align: center;
+    border-radius: 5vw;
+}
+
+.comment {
+    padding: 15px;
+    display: flex;
+    color: white;
+}
+
+.comment-author {
+    margin: 0;
+    padding: 0;
+}
+
+.comment-text {
+    padding-left: 2vw;
+}
+
+.comment-body {
+    margin: 0;
+    padding: 0;
+    overflow-wrap: normal;
+}
+
+.comment-profile-picture {
+    border-radius: 50%;
+    width: 5vh;
+    height: 5vh;
 }

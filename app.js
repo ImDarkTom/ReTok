@@ -18,10 +18,16 @@ const vidAuthor = document.querySelector('#username-text');
 const vidAgo = document.querySelector('#time-ago-text');
 
 const upvoteText = document.querySelector('#upvote-amount');
+const commentText = document.querySelector('#comment-amount');
+
+const commentButton = document.querySelector('#comment-box');
 
 const nextVidThumb = document.querySelector('#next-vid-thumb');
 const notificationText = document.querySelector('#notification-text');
 const searchInput = document.querySelector('#search-box');
+
+const commentPopup = document.querySelector('#comment-popup');
+const commentList = document.querySelector('#comment-list');
 
 if (subreddit) {
     searchInput.value = `r/${subreddit} ${query}`;
@@ -75,6 +81,67 @@ function saveVideo() {
     } else {
         saveToggle = true;
     }
+}
+
+//Comments
+let commentsOpen = false;
+
+async function OpenComments() {
+    mainVid.pause();
+    commentList.innerHTML = '';
+    commentPopup.style.transform = `translateY(0%)`;
+
+    const response = await fetch(`https://www.reddit.com${currentVideoData.permalink}.json`);
+    const data = await response.json();
+    const comments = data[1].data.children;
+
+    for (const commentIndex in comments) {
+        const commentData = comments[commentIndex].data;
+
+        const response = await fetch(`https://www.reddit.com/user/${commentData.author}/about.json`);
+        const data = await response.json();
+        const pfpURL = data.data.icon_img.replace(/amp;/g, '');
+
+        CreateComment(commentData.id, pfpURL, commentData.author, commentData.body);
+    }
+
+    commentsOpen = true;
+}
+
+function CloseComments() {
+    mainVid.play();
+    commentPopup.style.transform = `translateY(100%)`;
+    commentsOpen = false;
+}
+
+function CreateComment(id, pfp, author, body) {
+    const mainComment = document.createElement('div');
+    mainComment.classList.add('comment');
+    mainComment.id = id;
+
+    const pfpImage = document.createElement('img');
+    pfpImage.src = pfp;
+    pfpImage.classList.add('comment-profile-picture');
+    pfpImage.alt = `${author}'s Profile Picture`;
+
+    const textDiv = document.createElement('div');
+    textDiv.classList.add('comment-text');
+
+    const authorText = document.createElement('b');
+    authorText.classList.add('comment-author');
+    authorText.textContent = author;
+    
+    const bodyText = document.createElement('p');
+    bodyText.classList.add('comment-body');
+    bodyText.textContent = body;
+
+    textDiv.appendChild(authorText);
+    textDiv.appendChild(bodyText);
+
+    mainComment.appendChild(pfpImage);
+    mainComment.appendChild(textDiv);
+
+    commentList.appendChild(mainComment);
 }
 
 searchInput.addEventListener('keydown', function(event) {
@@ -135,6 +202,7 @@ async function getNextVideo() {
         vidAuthor.href = `https://reddit.com/u/${postData.author}`;
 
         upvoteText.textContent = postData.score < 1000 ? postData.score : `${(postData.score/1000).toFixed(1)}K`;
+        commentText.textContent = postData.num_comments.toLocaleString();
 
         vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
 
@@ -195,38 +263,39 @@ document.addEventListener('touchmove', function (e) {
     const currentY = e.touches[0].clientY;
     const moved = currentY - startY;
 
-    if (moved > -100) {
+    if (moved > -100 && !commentsOpen) {
         nextVidThumb.style = `transform: translateY(${100+moved}vh);`;
     }
 })
 
 document.addEventListener('touchend', async function (e) {
     endY = e.changedTouches[0].clientY;
-    console.log(endY - startY);
-    if (endY - startY >= -100) {
-        nextVidThumb.style = `transform: translateY(100vh);`;
-    }
+    if (!commentsOpen) {
+        if (endY - startY >= -100) {
+            nextVidThumb.style = `transform: translateY(100vh);`;
+        }
 
-    if (endY - startY <= -100) {
-        vidTitle.style = 'color: gray;';
+        if (endY - startY <= -100) {
+            vidTitle.style = 'color: gray;';
 
-        const videoLoadedPromise = new Promise(resolve => {
-            mainVid.addEventListener('canplaythrough', function () {
-                resolve();
+            const videoLoadedPromise = new Promise(resolve => {
+                mainVid.addEventListener('canplaythrough', function () {
+                    resolve();
+                });
             });
-        });
 
-        await getNextVideo();
-        await videoLoadedPromise;
-        
-        vidTitle.style = 'color: white;';
-        nextVidThumb.style = `transform: translateY(100vh);`;
-        nextVidThumb.src = nextThumbnail;
-        const nextBorderHeight = (window.innerHeight/2) - (nextVidThumb.getBoundingClientRect().height/2) + nextVidThumb.getBoundingClientRect().top;
-        document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);
-    }
+            await getNextVideo();
+            await videoLoadedPromise;
 
-    if (endY - startY >= 100) {
-        getPrevVideo();
+            vidTitle.style = 'color: white;';
+            nextVidThumb.style = `transform: translateY(100vh);`;
+            nextVidThumb.src = nextThumbnail;
+            const nextBorderHeight = (window.innerHeight / 2) - (nextVidThumb.getBoundingClientRect().height / 2) + nextVidThumb.getBoundingClientRect().top;
+            document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);
+        }
+
+        if (endY - startY >= 100) {
+            getPrevVideo();
+        }
     }
 });

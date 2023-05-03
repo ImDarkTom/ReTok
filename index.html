@@ -23,16 +23,30 @@
         </div>
         <div id="vid-buttons">
             <div id="upvote-box">
-                <span class="material-symbols-outlined" id="upvotes-symbol">
+                <span class="material-symbols-outlined vid-symbol" id="upvotes-symbol">
                     arrow_upward
                 </span>
-                <h3 id="upvote-amount">-</h3>
+                <h3 id="upvote-amount" class="vid-button-amount">-</h3>
+            </div>
+            <div id="comment-box" onclick="OpenComments()">
+                <span class="material-symbols-outlined vid-symbol" id="comment-symbol">
+                    comment
+                </span>
+                <h3 id="comment-amount" class="vid-button-amount">-</h3>
             </div>
         </div>
     </div>
     <video loop autoplay id="main-vid" muted src="" onclick="playPause()" ondblclick="saveVideo()"></video>
-    <video src="" muted id="next-video-preload" preload="auto"></video>
+    <video src="" muted id="next-video-preload" preload="auto" autoplay></video>
     <img src="" id="next-vid-thumb">
+    <div id="comment-popup">
+        <h3 id="close-comments" onclick="CloseComments()">
+            Close Comments
+        </h3>
+        <div id="comment-list">
+            
+        </div>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
