@@ -24,16 +24,9 @@ const commentButton = document.querySelector('#comment-box');
 
 const nextVidThumb = document.querySelector('#next-vid-thumb');
 const notificationText = document.querySelector('#notification-text');
-const searchInput = document.querySelector('#search-box');
 
 const commentPopup = document.querySelector('#comment-popup');
 const commentList = document.querySelector('#comment-list');
-
-if (subreddit) {
-    searchInput.value = `r/${subreddit} ${query}`;
-} else {
-    searchInput.value = query;
-}
 
 function getTimeAgo(utcTimestamp) {
     const currentDate = new Date();
@@ -143,40 +136,6 @@ function CreateComment(id, pfp, author, body) {
 
     commentList.appendChild(mainComment);
 }
-
-searchInput.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        const search = searchInput.value.trim();
-        const params = new URLSearchParams(location.search);
-        let searchSub;
-        let searchTerm;
-        
-        if (search == `r/${subreddit} ${query}`) {
-            return;
-        }
-
-        if (search.substring(0, 2) == "r/") {
-            const formattedSearch = search.split(/ (.*)/s);
-            searchSub = formattedSearch[0].replace('r/', '');
-            searchTerm = formattedSearch[1];
-        } else {
-            searchTerm = search;
-        }
-
-        if (searchSub) {
-            params.set('r', searchSub);
-        } else {
-            params.set('r', '');
-        }
-
-        if (searchTerm) {
-            params.set('q', searchTerm);
-        } else {
-            params.set('q', '');
-        }
-        window.location.href = "?" + params.toString();
-    }
-});
 
 async function getNextVideo() {
     loopPos++;
