@@ -25,8 +25,53 @@ body {
     margin: 0;
     padding: 0;
     border: 0;
-    width: 100vw;
+    width: 88vw;
     height: 5vh;
     color: white;
     background-color: var(--dark-grey);
+}
+
+#recently-searched {
+    width: 100%;
+    color: white;
+    overflow-y: scroll;
+}
+
+.recent-search {
+    height: 5vh;
+    background-color: #333;
+    margin-top: 1vh;
+
+}
+
+.remove-recent-search {
+    position: absolute;
+    right: 5%;
+    height: 5vh;
+    width: 5vh;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.recent-search-text {
+    font-size: 1.2rem;
+    padding-left: 3vw;
+    padding-top: 1.6vh;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+#search-bar {
+    display: inline;
+}
+
+#clear-searches {
+    color: white;
+    background: var(--dark-grey);
+    height: 5vh;
+    width: 12vw;
+    border: 0;
+    position: absolute;
+    right: 0;
 }

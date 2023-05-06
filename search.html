@@ -12,7 +12,10 @@
     <link rel="stylesheet" href="css/navbar.css" type="text/css">
 </head>
 <body>
-    <input type="text" id="search-box" placeholder="Search..." onkeydown="if (event.keyCode === 13) search()">
+    <div id="search-bar">
+        <input type="text" id="search-box" placeholder="Search..." onkeydown="if (event.keyCode === 13) search(searchBox.value.trim())">
+        <button onclick="clearAllSearches()" id="clear-searches"><span class="material-symbols-outlined">delete</span></button>
+    </div>
     <div id="recently-searched"></div>
     <div id="navbar">
         <a href="index.html"><span class="material-symbols-outlined">explore</span></a>

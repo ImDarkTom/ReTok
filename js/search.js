@@ -1,9 +1,9 @@
 const searchBox = document.querySelector('#search-box');
 
-const recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+let recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+const recentSearchList = document.querySelector('#recently-searched');
 
-function search() {
-    const search = searchBox.value.trim();
+function search(search) {
     const params = new URLSearchParams(location.search);
     let searchSub;
     let searchTerm;
@@ -28,8 +28,48 @@ function search() {
         params.set('q', '');
     }
 
-    recentSearches.push(searchTerm);
+    if (recentSearches[0] != search) {
+        recentSearches = [search].concat(recentSearches);
+    }
     localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
 
     window.location.href = "index.html?" + params.toString();
+}
+
+function removeRecentSearch(element, index) {
+    recentSearches.splice(index, 1);
+    localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+    element.parentNode.parentNode.removeChild(element.parentNode);
+}
+
+function redirectToRecent(index) {
+    search(recentSearches[index]);
+}
+
+function clearAllSearches() {
+    if(confirm('Are you sure you want to clear all recent searches?')) {
+        localStorage.setItem('recentSearches', JSON.stringify([]));
+        recentSearchList.innerHTML = '';
+    }
+}
+
+for (const index in recentSearches) {
+    const recentSearchBox = document.createElement('div');
+    recentSearchBox.classList.add('recent-search');
+
+    const searchText = document.createElement('span');
+    searchText.classList.add('recent-search-text');
+    searchText.setAttribute('onclick', `redirectToRecent(${index});`); 
+    searchText.textContent = recentSearches[index];
+
+    const removeButton = document.createElement('button');
+    removeButton.classList.add('material-symbols-outlined');
+    removeButton.classList.add('remove-recent-search');
+    removeButton.setAttribute('onclick', `removeRecentSearch(this, ${index});`); 
+    removeButton.textContent = 'close';
+
+    recentSearchBox.appendChild(searchText);
+    recentSearchBox.appendChild(removeButton);
+
+    recentSearchList.appendChild(recentSearchBox);
 }
