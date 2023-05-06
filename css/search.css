@@ -29,19 +29,20 @@ body {
     height: 5vh;
     color: white;
     background-color: var(--dark-grey);
+    padding-left: 2vw;
 }
 
 #recently-searched {
     width: 100%;
     color: white;
     overflow-y: scroll;
+    margin-top: 1vh;
 }
 
 .recent-search {
     height: 5vh;
     background-color: #333;
     margin-top: 1vh;
-
 }
 
 .remove-recent-search {
