@@ -40,7 +40,7 @@ function search(search) {
 }
 
 let typingTimer;
-const pauseInterval = 500;
+const pauseInterval = settings.searchSuggestionsInterval || 500;
 
 searchBox.addEventListener('input', () => {
     clearTimeout(typingTimer);
