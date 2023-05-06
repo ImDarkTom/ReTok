@@ -246,3 +246,7 @@ document.addEventListener('touchend', async function (e) {
         }
     }
 });
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await getNextVideo();
+});
