@@ -168,7 +168,7 @@ async function getNextVideo() {
         mainVid.play();
     } finally {
         if (loopPos >= currentVideos.length - 1 || currentVideos.length == 0) {
-            const url = `https://www.reddit.com/search.json?q=${subreddit ? `subreddit:${subreddit}` : ''} ${query ? `${query}` : ''} type:video&include_over_18=1&limit=25&after=${nextFullname}`;
+            const url = `https://www.reddit.com/${subreddit ? `r/${subreddit}/` : ''}search.json?q=${query ? `${query}` : ''} type:video&include_over_18=1&limit=25&after=${nextFullname}${subreddit ? '&restrict_sr=1' : ''}`;
             const response = await fetch(url);
             const data = await response.json();
 
