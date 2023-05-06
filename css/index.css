@@ -139,34 +139,6 @@ body {
     border-bottom: 100px solid black;
 }
 
-#notification-text {
-    color: white;
-    background-color: gray;
-    border-radius: 1vh;
-    text-align: center;
-    visibility: hidden;
-    position: absolute;
-    top: 0;
-    bottom:10;
-    left: 0;
-    right: 0;
-    z-index: 1;
-}
-
-#search-box {
-    color: white;
-    background: transparent;
-    border: 0;
-    border-bottom: 0.2vh solid white;
-    outline: none;
-    text-align: center;
-    font-weight: bold;
-    width: 35vw;
-    display: block;
-    margin: 0 auto;
-    z-index: 1;
-}
-
 #comment-popup {
     width: 100vw;
     height: 60vh;
