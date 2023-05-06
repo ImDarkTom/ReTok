@@ -81,6 +81,7 @@ let commentsOpen = false;
 
 async function OpenComments() {
     mainVid.pause();
+    commentsOpen = true;
     commentList.innerHTML = '';
     commentPopup.style.transform = `translateY(0%)`;
 
@@ -97,8 +98,6 @@ async function OpenComments() {
 
         CreateComment(commentData.id, pfpURL, commentData.author, commentData.body);
     }
-
-    commentsOpen = true;
 }
 
 function CloseComments() {
