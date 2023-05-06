@@ -72,6 +72,13 @@ body {
     left: 0px;
 }
 
+#save-box {
+    bottom: 20vh;
+    position: absolute;
+    right: 0px;
+    left: 0px;
+}
+
 .vid-button-amount {
     padding: 0;
     margin: 0;

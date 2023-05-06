@@ -1,11 +1,10 @@
 const settings = JSON.parse(localStorage.getItem('settings'));
+let saved = JSON.parse(localStorage.getItem('saved')) || [];
 
-const params = new URLSearchParams(new URL(window.location.toLocaleString()).search);
-const subreddit = params.get('r');
-const query = params.get('q');
 
 let loopPos = -1;
-let currentVideos = JSON.parse(localStorage.getItem('saved')) || [];
+let currentVideos = saved;
+let nextFullname = "";
 let nextThumbnail;
 let currentVideoData;
 
@@ -21,6 +20,8 @@ const upvoteText = document.querySelector('#upvote-amount');
 const commentText = document.querySelector('#comment-amount');
 
 const commentButton = document.querySelector('#comment-box');
+
+const saveIcon = document.querySelector('#save-symbol');
 
 const nextVidThumb = document.querySelector('#next-vid-thumb');
 const notificationText = document.querySelector('#notification-text');
@@ -47,6 +48,18 @@ function getTimeAgo(utcTimestamp) {
         const days = Math.floor(secondsDifference / 86400);
         return `${days} ${days === 1 ? "day" : "days"} ago`;
     }
+}
+
+function SaveVideo() {
+        if (saved.find(obj => obj.id === currentVideoData.id)) {
+            saved = saved.filter(obj => obj.id !== currentVideoData.id);
+            saveIcon.textContent = 'bookmark_add';
+        } else {
+            saved.push(currentVideoData);
+            saveIcon.textContent = 'bookmark_remove';
+        }
+
+        localStorage.setItem('saved', JSON.stringify(saved));
 }
 
 //Comments
@@ -109,6 +122,8 @@ function CreateComment(id, pfp, author, body) {
     commentList.appendChild(mainComment);
 }
 
+
+//Video
 async function getNextVideo() {
     loopPos++;
     try {
@@ -135,16 +150,26 @@ async function getNextVideo() {
         upvoteText.textContent = postData.score < 1000 ? postData.score : `${(postData.score/1000).toFixed(1)}K`;
         commentText.textContent = postData.num_comments.toLocaleString();
 
+        if (saved.find(obj => obj.id === postData.id)) {
+            saveIcon.textContent = 'bookmark_remove';
+        } else {
+            saveIcon.textContent = 'bookmark_add';
+        }
+
         vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
 
         mainVid.play();
+        nextVidThumb.style = `transform: translateY(100vh);`;
     } finally {
         if (loopPos == 0) {
             await getNextVideo();
-            nextVidThumb.style = `transform: translateY(100vh);`;
         }
 
-        const nextPostData = currentVideos[loopPos+1];
+        if (!settings.preloadNextVid) {
+            return;
+        }
+
+        const nextPostData = currentVideos[loopPos + 1];
         const nextRedditMedia = nextPostData.secure_media.reddit_video;
 
         if (nextRedditMedia) {
@@ -209,7 +234,6 @@ document.addEventListener('touchend', async function (e) {
             await videoLoadedPromise;
 
             vidTitle.style = 'color: white;';
-            nextVidThumb.style = `transform: translateY(100vh);`;
             nextVidThumb.src = nextThumbnail;
             const nextBorderHeight = (window.innerHeight / 2) - (nextVidThumb.getBoundingClientRect().height / 2) + nextVidThumb.getBoundingClientRect().top;
             document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);

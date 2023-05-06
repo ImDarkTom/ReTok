@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="css/navbar.css" type="text/css">
 </head>
 <body>
-    <h3 id="notification-text"></h3>
     <div id="vidcontainer">
         <div id="vid-info">
             <div id="vid-additional-info">
@@ -36,9 +35,14 @@
                 </span>
                 <h3 id="comment-amount" class="vid-button-amount">-</h3>
             </div>
+            <div id="save-box" onclick="SaveVideo()">
+                <span class="material-symbols-outlined vid-symbol" id="save-symbol">
+                    bookmark_add
+                </span>
+            </div>
         </div>
     </div>
-    <video loop autoplay id="main-vid" muted src="" onclick="playPause()" ondblclick="saveVideo()"></video>
+    <video loop autoplay id="main-vid" muted src="" onclick="playPause()"></video>
     <video src="" muted id="next-video-preload" preload="auto" autoplay></video>
     <img src="" id="next-vid-thumb">
     <div id="comment-popup">

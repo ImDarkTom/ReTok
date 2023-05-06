@@ -1,4 +1,5 @@
 const settings = JSON.parse(localStorage.getItem('settings'));
+let saved = JSON.parse(localStorage.getItem('saved')) || [];
 
 const params = new URLSearchParams(new URL(window.location.toLocaleString()).search);
 const subreddit = params.get('r');
@@ -23,6 +24,8 @@ const upvoteText = document.querySelector('#upvote-amount');
 const commentText = document.querySelector('#comment-amount');
 
 const commentButton = document.querySelector('#comment-box');
+
+const saveIcon = document.querySelector('#save-symbol');
 
 const nextVidThumb = document.querySelector('#next-vid-thumb');
 const notificationText = document.querySelector('#notification-text');
@@ -51,31 +54,16 @@ function getTimeAgo(utcTimestamp) {
     }
 }
 
+function SaveVideo() {
+        if (saved.find(obj => obj.id === currentVideoData.id)) {
+            saved = saved.filter(obj => obj.id !== currentVideoData.id);
+            saveIcon.textContent = 'bookmark_add';
+        } else {
+            saved.push(currentVideoData);
+            saveIcon.textContent = 'bookmark_remove';
+        }
 
-function notification(content) {
-    notificationText.textContent = content;
-    notificationText.style.visibility = 'unset';
-    setTimeout(() => {
-        notificationText.style.visibility = 'hidden';
-    }, 1000);
-}
-
-let saveToggle = false;
-
-function saveVideo() {
-    if (saveToggle) {
-        let list = JSON.parse(localStorage.getItem('saved')) || [];
-        notification('Saved video');
-
-        list.push(currentVideoData);
-
-        localStorage.setItem('saved', JSON.stringify(list));
-        console.log('saved');
-
-        saveToggle = false;
-    } else {
-        saveToggle = true;
-    }
+        localStorage.setItem('saved', JSON.stringify(saved));
 }
 
 //Comments
@@ -138,6 +126,8 @@ function CreateComment(id, pfp, author, body) {
     commentList.appendChild(mainComment);
 }
 
+
+//Video
 async function getNextVideo() {
     loopPos++;
     try {
@@ -163,6 +153,12 @@ async function getNextVideo() {
 
         upvoteText.textContent = postData.score < 1000 ? postData.score : `${(postData.score/1000).toFixed(1)}K`;
         commentText.textContent = postData.num_comments.toLocaleString();
+
+        if (saved.find(obj => obj.id === currentVideoData.id)) {
+            saveIcon.textContent = 'bookmark_remove';
+        } else {
+            saveIcon.textContent = 'bookmark_add';
+        }
 
         vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
 
