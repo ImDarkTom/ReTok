@@ -11,6 +11,7 @@ let currentVideos = [];
 let nextFullname = "";
 let nextThumbnail;
 let currentVideoData;
+let nextVideoData;
 
 const mainVid = document.querySelector('#main-vid');
 const nextVidPreload = document.querySelector('#next-video-preload');
@@ -55,15 +56,15 @@ function getTimeAgo(utcTimestamp) {
 }
 
 function SaveVideo() {
-        if (saved.find(obj => obj.id === currentVideoData.id)) {
-            saved = saved.filter(obj => obj.id !== currentVideoData.id);
-            saveIcon.textContent = 'bookmark_add';
-        } else {
-            saved.push(currentVideoData);
-            saveIcon.textContent = 'bookmark_remove';
-        }
+    if (saved.find(obj => obj.id === currentVideoData.id)) {
+        saved = saved.filter(obj => obj.id !== currentVideoData.id);
+        saveIcon.textContent = 'bookmark_add';
+    } else {
+        saved.push(currentVideoData);
+        saveIcon.textContent = 'bookmark_remove';
+    }
 
-        localStorage.setItem('saved', JSON.stringify(saved));
+    localStorage.setItem('saved', JSON.stringify(saved));
 }
 
 //Comments
@@ -112,7 +113,7 @@ function CreateComment(id, pfp, author, body) {
     const authorText = document.createElement('b');
     authorText.classList.add('comment-author');
     authorText.textContent = author;
-    
+
     const bodyText = document.createElement('p');
     bodyText.classList.add('comment-body');
     bodyText.textContent = body;
@@ -128,41 +129,48 @@ function CreateComment(id, pfp, author, body) {
 
 
 //Video
+function loadVideo(vidData, nextVidData) {
+    const redditMedia = vidData.secure_media.reddit_video;
+
+    if (redditMedia) {
+        mainVid.src = redditMedia.fallback_url;
+    } else {
+        mainVid.src = vidData.preview.reddit_video_preview.fallback_url;
+    }
+
+    vidTitle.textContent = vidData.title.replace(/amp;/g, '');
+    vidTitle.href = "https://reddit.com" + vidData.permalink;
+
+    vidSubreddit.textContent = vidData.subreddit_name_prefixed;
+    vidSubreddit.href = `/?r=${vidData.subreddit}`;
+
+    vidAuthor.textContent = `@${vidData.author}`;
+    vidAuthor.href = `https://reddit.com/u/${vidData.author}`;
+
+    upvoteText.textContent = vidData.score < 1000 ? vidData.score : `${(vidData.score / 1000).toFixed(1)}K`;
+    commentText.textContent = vidData.num_comments.toLocaleString();
+
+    if (saved.find(obj => obj.id === currentVideoData.id)) {
+        saveIcon.textContent = 'bookmark_remove';
+    } else {
+        saveIcon.textContent = 'bookmark_add';
+    }
+
+    vidAgo.textContent = `• ${getTimeAgo(vidData.created)}`;
+
+    nextVidThumb.src = nextVidData.preview.images[0].source.url.replace(/amp;/g, '');
+
+    mainVid.play();
+}
+
 async function getNextVideo() {
     loopPos++;
     try {
-        const postData = currentVideos[loopPos].data;
-        const redditMedia = postData.secure_media.reddit_video;
-        currentVideoData = postData;
-        nextThumbnail = currentVideos[loopPos+1].data.preview.images[0].source.url.replace(/amp;/g, '');
+        currentVideoData = currentVideos[loopPos].data;
+        nextVideoData = currentVideos[loopPos + 1].data;
 
-        if (redditMedia) {
-            mainVid.src = redditMedia.fallback_url;
-        } else {
-            mainVid.src = postData.preview.reddit_video_preview.fallback_url;
-        }
-        
-        vidTitle.textContent = postData.title.replace(/amp;/g, '');
-        vidTitle.href = "https://reddit.com" + postData.permalink;
+        loadVideo(currentVideoData, nextVideoData);
 
-        vidSubreddit.textContent = postData.subreddit_name_prefixed;
-        vidSubreddit.href = `/?r=${postData.subreddit}`;
-
-        vidAuthor.textContent = `@${postData.author}`;
-        vidAuthor.href = `https://reddit.com/u/${postData.author}`;
-
-        upvoteText.textContent = postData.score < 1000 ? postData.score : `${(postData.score/1000).toFixed(1)}K`;
-        commentText.textContent = postData.num_comments.toLocaleString();
-
-        if (saved.find(obj => obj.id === currentVideoData.id)) {
-            saveIcon.textContent = 'bookmark_remove';
-        } else {
-            saveIcon.textContent = 'bookmark_add';
-        }
-
-        vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
-
-        mainVid.play();
     } finally {
         if (loopPos >= currentVideos.length - 1 || currentVideos.length == 0) {
             const url = `https://www.reddit.com/${subreddit ? `r/${subreddit}/` : ''}search.json?q=${query ? `${query}` : ''} type:video&include_over_18=1&limit=25&after=${nextFullname}${subreddit ? '&restrict_sr=1' : ''}`;
@@ -182,26 +190,22 @@ async function getNextVideo() {
         if (!settings.preloadNextVid) {
             return;
         }
-        
-        const nextPostData = currentVideos[loopPos+1].data;
-            const nextRedditMedia = nextPostData.secure_media.reddit_video;
 
-            if (nextRedditMedia) {
-                nextVidPreload.src = nextRedditMedia.fallback_url;
-            } else {
-                nextVidPreload.src = nextRedditMedia.preview.reddit_video_preview.fallback_url;
-            }
+        const nextRedditMedia = nextVideoData.secure_media.reddit_video;
 
-            nextVidPreload.load();
+        if (nextRedditMedia) {
+            nextVidPreload.src = nextRedditMedia.fallback_url;
+        } else {
+            nextVidPreload.src = nextRedditMedia.preview.reddit_video_preview.fallback_url;
+        }
+
+        nextVidPreload.load();
     }
 }
 
 function getPrevVideo() {
     loopPos--;
-    const postData = currentVideos[loopPos].data;
-    mainVid.src = postData.secure_media.reddit_video.fallback_url;
-    vidTitle.textContent = postData.title;
-    mainVid.play();
+    loadVideo(currentVideoData, nextVideoData);
 }
 
 function playPause() {
@@ -224,7 +228,7 @@ document.addEventListener('touchmove', function (e) {
     const moved = currentY - startY;
 
     if (moved > -100 && !commentsOpen) {
-        nextVidThumb.style = `transform: translateY(${100+moved}vh);`;
+        nextVidThumb.style = `transform: translateY(${100 + moved}vh);`;
     }
 })
 
@@ -249,7 +253,6 @@ document.addEventListener('touchend', async function (e) {
 
             vidTitle.style = 'color: white;';
             nextVidThumb.style = `transform: translateY(100vh);`;
-            nextVidThumb.src = nextThumbnail;
             const nextBorderHeight = (window.innerHeight / 2) - (nextVidThumb.getBoundingClientRect().height / 2) + nextVidThumb.getBoundingClientRect().top;
             document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);
         }
