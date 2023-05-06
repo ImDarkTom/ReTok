@@ -1,3 +1,5 @@
+const settings = JSON.parse(localStorage.getItem('settings'));
+
 const params = new URLSearchParams(new URL(window.location.toLocaleString()).search);
 const subreddit = params.get('r');
 const query = params.get('q');
@@ -181,16 +183,20 @@ async function getNextVideo() {
             nextVidThumb.style = `transform: translateY(100vh);`;
         }
 
-        const nextPostData = currentVideos[loopPos+1].data;
-        const nextRedditMedia = nextPostData.secure_media.reddit_video;
-
-        if (nextRedditMedia) {
-            nextVidPreload.src = nextRedditMedia.fallback_url;
-        } else {
-            nextVidPreload.src = nextRedditMedia.preview.reddit_video_preview.fallback_url;
+        if (!settings.preloadNextVid) {
+            return;
         }
+        
+        const nextPostData = currentVideos[loopPos+1].data;
+            const nextRedditMedia = nextPostData.secure_media.reddit_video;
 
-        nextVidPreload.load();
+            if (nextRedditMedia) {
+                nextVidPreload.src = nextRedditMedia.fallback_url;
+            } else {
+                nextVidPreload.src = nextRedditMedia.preview.reddit_video_preview.fallback_url;
+            }
+
+            nextVidPreload.load();
     }
 }
 

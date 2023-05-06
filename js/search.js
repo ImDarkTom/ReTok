@@ -1,3 +1,5 @@
+const settings = JSON.parse(localStorage.getItem('settings'));
+
 const searchBox = document.querySelector('#search-box');
 
 let recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];

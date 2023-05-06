@@ -1,3 +1,5 @@
+const settings = JSON.parse(localStorage.getItem('settings'));
+
 const params = new URLSearchParams(new URL(window.location.toLocaleString()).search);
 const subreddit = params.get('r');
 const query = params.get('q');
