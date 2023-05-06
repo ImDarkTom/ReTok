@@ -56,6 +56,7 @@ body {
 
 .vid-symbol {
     font-size: 10vw;
+    text-shadow: 5px 5px 5px black;
 }
 
 #upvote-box {
@@ -84,6 +85,7 @@ body {
     margin: 0;
     text-decoration: none;
     text-align: center;
+    text-shadow: 5px 5px 5px black;
 }
 
 #vid-info {
@@ -109,7 +111,7 @@ body {
     background-color: transparent;
     text-decoration: none;
     font-weight: bold;
-    text-shadow: 2px 2px 5px black;
+    text-shadow: 5px 5px 5px black;
 }
 
 #vid-additional-info {
