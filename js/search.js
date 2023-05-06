@@ -47,7 +47,7 @@ searchBox.addEventListener('input', () => {
     typingTimer = setTimeout( async () => {
         subSuggestions.innerHTML = '';
 
-        const response = await fetch(`https://api.reddit.com/api/search_reddit_names.json?query=${searchBox.value}&include_over_18=1`);
+        const response = await fetch(`https://api.reddit.com/api/search_reddit_names.json?query=${searchBox.value}&include_over_18=${settings.filterMature != null ? (settings.filterMature ? '1': '0'): '1'}`);
         const data = await response.json();
         const names = data.names;
         
