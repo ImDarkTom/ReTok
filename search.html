@@ -13,7 +13,8 @@
 </head>
 <body>
     <div id="search-bar">
-        <input type="text" id="search-box" placeholder="Search..." onkeydown="if (event.keyCode === 13) search(searchBox.value.trim())">
+        <input type="text" id="search-box" placeholder="Search..." onkeydown="if (event.keyCode === 13) search(searchBox.value.trim())" list="subreddit-suggestions">
+        <datalist id="subreddit-suggestions"></datalist>
         <button onclick="clearAllSearches()" id="clear-searches"><span class="material-symbols-outlined">delete</span></button>
     </div>
     <div id="recently-searched"></div>

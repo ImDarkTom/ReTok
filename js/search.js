@@ -1,6 +1,7 @@
 const settings = JSON.parse(localStorage.getItem('settings'));
 
 const searchBox = document.querySelector('#search-box');
+const subSuggestions = document.querySelector('#subreddit-suggestions');
 
 let recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
 const recentSearchList = document.querySelector('#recently-searched');
@@ -38,6 +39,29 @@ function search(search) {
     window.location.href = "index.html?" + params.toString();
 }
 
+let typingTimer;
+const pauseInterval = 500;
+
+searchBox.addEventListener('input', () => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout( async () => {
+        subSuggestions.innerHTML = '';
+
+        const response = await fetch(`https://api.reddit.com/api/search_reddit_names.json?query=${searchBox.value}&include_over_18=1`);
+        const data = await response.json();
+        const names = data.names;
+        
+        for (const index in names) {
+            const suggestion = document.createElement('option');
+            suggestion.value = `r/${names[index]}`;
+            suggestion.textContent = `r/${names[index]}`;
+
+            subSuggestions.appendChild(suggestion);
+        }
+
+    }, pauseInterval);
+});
+
 function removeRecentSearch(element, index) {
     recentSearches.splice(index, 1);
     localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
@@ -54,6 +78,7 @@ function clearAllSearches() {
         recentSearchList.innerHTML = '';
     }
 }
+
 
 for (const index in recentSearches) {
     const recentSearchBox = document.createElement('div');
