@@ -264,5 +264,11 @@ document.addEventListener('touchend', async function (e) {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+    if (subreddit || query) {
+        document.title = `${subreddit ? `r/${subreddit} ` : ''}${query ? query : ''} | ReTok`;
+    } else {
+        document.title = 'Explore | ReTok';
+    }
+    
     await getNextVideo();
 });
