@@ -1,9 +1,14 @@
+const params = new URLSearchParams(new URL(window.location.toLocaleString()).search);
+const subreddit = params.get('r');
+const query = params.get('q');
+
 let loopPos = -1;
-let currentVideos = JSON.parse(localStorage.getItem('saved')) || [];;
+let currentVideos = JSON.parse(localStorage.getItem('saved')) || [];
 let nextThumbnail;
 let currentVideoData;
 
 const mainVid = document.querySelector('#main-vid');
+const nextVidPreload = document.querySelector('#next-video-preload');
 
 const vidTitle = document.querySelector('#vid-title');
 const vidSubreddit = document.querySelector('#subreddit-text');
@@ -11,8 +16,15 @@ const vidAuthor = document.querySelector('#username-text');
 const vidAgo = document.querySelector('#time-ago-text');
 
 const upvoteText = document.querySelector('#upvote-amount');
+const commentText = document.querySelector('#comment-amount');
+
+const commentButton = document.querySelector('#comment-box');
 
 const nextVidThumb = document.querySelector('#next-vid-thumb');
+const notificationText = document.querySelector('#notification-text');
+
+const commentPopup = document.querySelector('#comment-popup');
+const commentList = document.querySelector('#comment-list');
 
 function getTimeAgo(utcTimestamp) {
     const currentDate = new Date();
@@ -35,46 +47,120 @@ function getTimeAgo(utcTimestamp) {
     }
 }
 
+//Comments
+let commentsOpen = false;
+
+async function OpenComments() {
+    mainVid.pause();
+    commentsOpen = true;
+    commentList.innerHTML = '';
+    commentPopup.style.transform = `translateY(0%)`;
+
+    const response = await fetch(`https://www.reddit.com${currentVideoData.permalink}.json`);
+    const data = await response.json();
+    const comments = data[1].data.children;
+
+    for (const commentIndex in comments) {
+        const commentData = comments[commentIndex].data;
+
+        const response = await fetch(`https://www.reddit.com/user/${commentData.author}/about.json`);
+        const data = await response.json();
+        const pfpURL = data.data.icon_img.replace(/amp;/g, '');
+
+        CreateComment(commentData.id, pfpURL, commentData.author, commentData.body);
+    }
+}
+
+function CloseComments() {
+    mainVid.play();
+    commentPopup.style.transform = `translateY(100%)`;
+    commentsOpen = false;
+}
+
+function CreateComment(id, pfp, author, body) {
+    const mainComment = document.createElement('div');
+    mainComment.classList.add('comment');
+    mainComment.id = id;
+
+    const pfpImage = document.createElement('img');
+    pfpImage.src = pfp;
+    pfpImage.classList.add('comment-profile-picture');
+    pfpImage.alt = `${author}'s Profile Picture`;
+
+    const textDiv = document.createElement('div');
+    textDiv.classList.add('comment-text');
+
+    const authorText = document.createElement('b');
+    authorText.classList.add('comment-author');
+    authorText.textContent = author;
+    
+    const bodyText = document.createElement('p');
+    bodyText.classList.add('comment-body');
+    bodyText.textContent = body;
+
+    textDiv.appendChild(authorText);
+    textDiv.appendChild(bodyText);
+
+    mainComment.appendChild(pfpImage);
+    mainComment.appendChild(textDiv);
+
+    commentList.appendChild(mainComment);
+}
+
 async function getNextVideo() {
     loopPos++;
-    const postData = currentVideos[loopPos];
-    const redditMedia = postData.secure_media.reddit_video;
-    currentVideoData = postData;
-    nextThumbnail = currentVideos[loopPos + 1].preview.images[0].source.url.replace(/amp;/g, '');
+    try {
+        const postData = currentVideos[loopPos];
+        const redditMedia = postData.secure_media.reddit_video;
+        currentVideoData = postData;
+        nextThumbnail = currentVideos[loopPos+1].preview.images[0].source.url.replace(/amp;/g, '');
 
-    if (redditMedia) {
-        mainVid.src = redditMedia.fallback_url;
-    } else {
-        mainVid.src = postData.preview.reddit_video_preview.fallback_url;
-    }
+        if (redditMedia) {
+            mainVid.src = redditMedia.fallback_url;
+        } else {
+            mainVid.src = postData.preview.reddit_video_preview.fallback_url;
+        }
+        
+        vidTitle.textContent = postData.title.replace(/amp;/g, '');
+        vidTitle.href = "https://reddit.com" + postData.permalink;
 
-    vidTitle.textContent = postData.title.replace(/amp;/g, '');
-    vidTitle.href = "https://reddit.com" + postData.permalink;
+        vidSubreddit.textContent = postData.subreddit_name_prefixed;
+        vidSubreddit.href = `/?r=${postData.subreddit}`;
 
-    vidSubreddit.textContent = postData.subreddit_name_prefixed;
-    vidSubreddit.href = `/?r=${postData.subreddit}`;
+        vidAuthor.textContent = `@${postData.author}`;
+        vidAuthor.href = `https://reddit.com/u/${postData.author}`;
 
-    vidAuthor.textContent = `@${postData.author}`;
-    vidAuthor.href = `https://reddit.com/u/${postData.author}`;
+        upvoteText.textContent = postData.score < 1000 ? postData.score : `${(postData.score/1000).toFixed(1)}K`;
+        commentText.textContent = postData.num_comments.toLocaleString();
 
-    upvoteText.textContent = postData.score < 1000 ? postData.score : `${(postData.score / 1000).toFixed(1)}K`;
+        vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
 
-    vidAgo.textContent = `• ${getTimeAgo(postData.created)}`;
+        mainVid.play();
+    } finally {
+        if (loopPos == 0) {
+            await getNextVideo();
+            nextVidThumb.style = `transform: translateY(100vh);`;
+        }
 
-    mainVid.load();
+        const nextPostData = currentVideos[loopPos+1];
+        const nextRedditMedia = nextPostData.secure_media.reddit_video;
 
-    if (loopPos == 0) {
-        await getNextVideo();
-        nextVidThumb.style = `transform: translateY(100vh);`;
+        if (nextRedditMedia) {
+            nextVidPreload.src = nextRedditMedia.fallback_url;
+        } else {
+            nextVidPreload.src = nextRedditMedia.preview.reddit_video_preview.fallback_url;
+        }
+
+        nextVidPreload.load();
     }
 }
 
 function getPrevVideo() {
     loopPos--;
-    const postData = currentVideos[loopPos].data;
+    const postData = currentVideos[loopPos];
     mainVid.src = postData.secure_media.reddit_video.fallback_url;
     vidTitle.textContent = postData.title;
-    mainVid.load();
+    mainVid.play();
 }
 
 function playPause() {
@@ -96,38 +182,39 @@ document.addEventListener('touchmove', function (e) {
     const currentY = e.touches[0].clientY;
     const moved = currentY - startY;
 
-    if (moved > -100) {
+    if (moved > -100 && !commentsOpen) {
         nextVidThumb.style = `transform: translateY(${100+moved}vh);`;
     }
 })
 
 document.addEventListener('touchend', async function (e) {
     endY = e.changedTouches[0].clientY;
-    console.log(endY - startY);
-    if (endY - startY >= -100) {
-        nextVidThumb.style = `transform: translateY(100vh);`;
-    }
+    if (!commentsOpen) {
+        if (endY - startY >= -100) {
+            nextVidThumb.style = `transform: translateY(100vh);`;
+        }
 
-    if (endY - startY <= -100) {
-        vidTitle.style = 'color: gray;';
+        if (endY - startY <= -100) {
+            vidTitle.style = 'color: gray;';
 
-        const videoLoadedPromise = new Promise(resolve => {
-            mainVid.addEventListener('canplaythrough', function () {
-                resolve();
+            const videoLoadedPromise = new Promise(resolve => {
+                mainVid.addEventListener('canplaythrough', function () {
+                    resolve();
+                });
             });
-        });
 
-        await getNextVideo();
-        await videoLoadedPromise;
-        
-        vidTitle.style = 'color: white;';
-        nextVidThumb.style = `transform: translateY(100vh);`;
-        nextVidThumb.src = nextThumbnail;
-        const nextBorderHeight = (window.innerHeight/2) - (nextVidThumb.getBoundingClientRect().height/2) + nextVidThumb.getBoundingClientRect().top;
-        document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);
-    }
+            await getNextVideo();
+            await videoLoadedPromise;
 
-    if (endY - startY >= 100) {
-        getPrevVideo();
+            vidTitle.style = 'color: white;';
+            nextVidThumb.style = `transform: translateY(100vh);`;
+            nextVidThumb.src = nextThumbnail;
+            const nextBorderHeight = (window.innerHeight / 2) - (nextVidThumb.getBoundingClientRect().height / 2) + nextVidThumb.getBoundingClientRect().top;
+            document.documentElement.style.setProperty('--next-border-height', `${nextBorderHeight}px`);
+        }
+
+        if (endY - startY >= 100) {
+            getPrevVideo();
+        }
     }
 });
